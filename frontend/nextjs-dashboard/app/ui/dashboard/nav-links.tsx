@@ -4,21 +4,26 @@ import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
+  KeyIcon,
 } from '@heroicons/react/24/outline';
 
 //Con link se puede navegar sin problemas por la pagina 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx'
+import { EyeIcon } from '@heroicons/react/20/solid';
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+  { 
+    name: 'Info', href: '/dashboard', icon: HomeIcon 
+  },
   {
-    name: 'Funciones',
-    href: '/dashboard/funciones',
-    icon: DocumentDuplicateIcon,
+    name: 'Motor / Válvulas', href: '/dashboard/funcionesMotor', icon: DocumentDuplicateIcon,
+  },
+  {
+    name:'Raceway', href: '/dashboard/raceway', icon: EyeIcon,
   },
 ];
 

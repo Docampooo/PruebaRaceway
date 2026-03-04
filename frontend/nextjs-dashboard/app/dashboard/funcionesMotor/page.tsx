@@ -34,8 +34,10 @@ type EstadoValvula = {
 };
 
 type Estado = {
-  motor: EstadoMotor;
-  valvula: EstadoValvula;
+  motor: { encendido: boolean; direccion: 'forward' | 'backward' | null };
+  raceway: { nivel_agua: number; n1_minimo: boolean; n2_maximo: boolean; v1_vaciado: boolean; v2_llenado: boolean };
+  deposito: { nivel: number; n3_minimo: boolean; n4_maximo: boolean; v3_entrada: boolean; v4_salida: boolean };
+  salida: { nivel: number; n5_minimo: boolean; n6_maximo: boolean; v5_salida: boolean; v6_salida: boolean };
 };
 
 async function fetchEstado(deviceName: string): Promise<Estado> {
@@ -278,17 +280,17 @@ export default function Page() {
                 </div>
 
                 {/* Valvula */}
-                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${ estado.valvula.abierta ? 'border-sky-500 bg-gradient-to-r from-sky-950/60 to-blue-950/60' : 'border-amber-500 bg-gradient-to-r from-amber-950/60 to-blue-950/60' } p-4`}>
+                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${ estado.raceway.v2_llenado ? 'border-sky-500 bg-gradient-to-r from-sky-950/60 to-blue-950/60' : 'border-amber-500 bg-gradient-to-r from-amber-950/60 to-blue-950/60' } p-4`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${ estado.valvula.abierta ? 'bg-sky-500/20 ring-1 ring-sky-500/40' : 'bg-amber-500/20 ring-1 ring-amber-500/40' }`}>
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${ estado.raceway.v2_llenado ? 'bg-sky-500/20 ring-1 ring-sky-500/40' : 'bg-amber-500/20 ring-1 ring-amber-500/40' }`}>
                         &#9685;
                       </div>
                       <p className={`${lusitana.className} font-bold text-white`}>Valvula</p>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${ estado.valvula.abierta ? 'bg-sky-500/20 text-sky-400' : 'bg-amber-500/20 text-amber-400' }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${ estado.valvula.abierta ? 'bg-sky-400 animate-pulse' : 'bg-amber-500' }`} />
-                      {estado.valvula.abierta ? 'ABIERTA' : 'CERRADA'}
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${ estado.raceway.v2_llenado ? 'bg-sky-500/20 text-sky-400' : 'bg-amber-500/20 text-amber-400' }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${ estado.raceway.v2_llenado ? 'bg-sky-400 animate-pulse' : 'bg-amber-500' }`} />
+                      {estado.raceway.v2_llenado ? 'ABIERTA' : 'CERRADA'}
                     </span>
                   </div>
                 </div>
