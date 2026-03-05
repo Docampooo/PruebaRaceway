@@ -1,9 +1,65 @@
 //Funcinoes de confirmacion de la API en python
-// const BASE_URL = 'http://localhost:3333'
-const BASE_URL = 'http://localhost:8000';
 
-//Fases del motor y válvulas
-export async function fase(fase: number) {
+const BASE_URL = 'http://localhost:8000';
+// const BASE_URL = 'http://localhost:3333'
+
+//getter del json que recibe de la api intermedia
+export type Estado = {
+
+  motor: { 
+    encendido: boolean; 
+    forward: boolean; 
+  };
+
+  raceway: { 
+    nivel: number; 
+
+    sensor_minimo: boolean; 
+    sensor_maximo: boolean; 
+
+    valvula_vaciado: boolean; 
+    valvula_llenado: boolean 
+  };
+
+  deposito: { 
+    nivel: number; 
+
+    sensor_minimo: boolean;
+    sensor_maximo: boolean; 
+
+    valvula_vaciado: boolean; 
+    valvula_llenado: boolean 
+  };
+
+  salida: { 
+    nivel: number; 
+
+    sensor_minimo: boolean; 
+    sensor_maximo: boolean; 
+
+    valvula_vaciado: boolean; 
+    valvula_llenado: boolean 
+  };
+
+};
+
+export async function fetchEstado(): Promise<Estado> {
+
+  const res = await fetch(`${BASE_URL}/datos`);
+  if (!res.ok) throw new Error('Error al obtener el estado');
+
+  return res.json();
+}
+
+export async function fase(fase: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/${fase}`, { method: 'POST' });
-  if (!response.ok) throw new Error('Error al activar la fase 1');
+  if (!response.ok) throw new Error(`Error al activar la fase ${fase}`);
+}
+
+export async function toggleValvula(valvula: string, abrir: boolean): Promise<void> {
+  const res = await fetch(`${BASE_URL}/${valvula}/${abrir ? 'open' : 'close'}`, { method: 'POST' });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.detail ?? 'Error al accionar valvula');
+  }
 }

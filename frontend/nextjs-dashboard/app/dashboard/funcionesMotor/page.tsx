@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { lusitana } from '@/app/ui/fonts';
-import { fase } from '@/app/lib/actions';
+import { fase, fetchEstado, type Estado } from '@/app/lib/actions';
 
-const DEVICE = 'motor';
-const INTERVALO_MS = 1000;
-
-//bateria de pruebas local
-// const BASE_URL = 'http://localhost:3333'
-const BASE_URL = 'http:localhost:8000';
+const INTERVALO_MS = 10000;
 
 type FuncionMotor = {
   id: number;
@@ -23,28 +18,6 @@ type FuncionMotor = {
   onClick: () => Promise<void>;
 };
 
-type EstadoMotor = {
-  encendido: boolean;
-  direccion: 'forward' | 'backward' | null;
-};
-
-type EstadoValvula = {
-  abierta: boolean;
-};
-
-type Estado = {
-  motor: { encendido: boolean; direccion: 'forward' | 'backward' | null };
-  raceway: { nivel_agua: number; n1_minimo: boolean; n2_maximo: boolean; v1_vaciado: boolean; v2_llenado: boolean };
-  deposito: { nivel: number; n3_minimo: boolean; n4_maximo: boolean; v3_entrada: boolean; v4_salida: boolean };
-  salida: { nivel: number; n5_minimo: boolean; n6_maximo: boolean; v5_salida: boolean; v6_salida: boolean };
-};
-
-async function fetchEstado(deviceName: string): Promise<Estado> {
-  const res = await fetch(`${BASE_URL}/devices/${deviceName}/status`);
-  if (!res.ok) throw new Error('Error al obtener el estado');
-  return res.json();
-}
-
 const motorFunctions: FuncionMotor[] = [
   {
     id: 1,
@@ -57,30 +30,71 @@ const motorFunctions: FuncionMotor[] = [
     btnColor: 'bg-emerald-500 hover:bg-emerald-400',
     onClick: () => fase(1),
   },
+  {
+    id: 2,
+    nombre: 'Motor parado, Valvula abierta',
+    descripcion: 'Abre las valvulas de control del sistema hidraulico con el motor parado.',
+    icono: '■',
+    accion: 'Detener',
+    color: 'from-blue-950 to-blue-800',
+    hoverColor: 'hover:from-blue-900 hover:to-blue-700',
+    btnColor: 'bg-red-500 hover:bg-red-400',
+    onClick: () => fase(2),
+  },
+  {
+    id: 3,
+    nombre: 'Motor encendido, Valvula abierta',
+    descripcion: 'Abre las valvulas de control del sistema hidraulico para permitir la circulacion completa del flujo y activa el motor.',
+    icono: '◈',
+    accion: 'Abrir',
+    color: 'from-blue-900 to-indigo-800',
+    hoverColor: 'hover:from-blue-800 hover:to-indigo-700',
+    btnColor: 'bg-sky-500 hover:bg-sky-400',
+    onClick: () => fase(3),
+  },
+  {
+    id: 4,
+    nombre: 'Cerrar todo',
+    descripcion: 'Cierra todas las valvulas del circuito hidraulico para aislar el sistema y prevenir perdidas.',
+    icono: '◉',
+    accion: 'Cerrar',
+    color: 'from-slate-800 to-blue-900',
+    hoverColor: 'hover:from-slate-700 hover:to-blue-800',
+    btnColor: 'bg-amber-500 hover:bg-amber-400',
+    onClick: () => fase(4),
+  },
+  {
+    id: 5,
+    nombre: 'Motor sentido contrario',
+    descripcion: 'El motor ya activo gira en sentido contrario al actual.',
+    icono: '◎',
+    accion: 'Invertir',
+    color: 'from-blue-800 to-cyan-900',
+    hoverColor: 'hover:from-blue-700 hover:to-cyan-800',
+    btnColor: 'bg-blue-400 hover:bg-blue-300',
+    onClick: () => fase(5),
+  },
 ];
 
 export default function Page() {
 
-  // Estado UI de los botones
   const [cargando, setCargando] = useState<number | null>(null);
   const [exito, setExito] = useState<number | null>(null);
   const [errorId, setErrorId] = useState<number | null>(null);
 
-  // Estado en tiempo real del sistema
   const [estado, setEstado] = useState<Estado | null>(null);
   const [errorEstado, setErrorEstado] = useState<string | null>(null);
   const [ultimaActualizacion, setUltimaActualizacion] = useState<string>('');
 
-  // Polling cada segundo
   useEffect(() => {
     const actualizar = async () => {
       try {
-        const datos = await fetchEstado(DEVICE);
+        const datos = await fetchEstado();
         setEstado(datos);
         setErrorEstado(null);
         setUltimaActualizacion(new Date().toLocaleTimeString());
-      } catch (e) {
-        setErrorEstado('Sin conexion con la API');
+      } catch (e: any) {
+        setErrorEstado(e.message ?? 'Sin conexion con la API');
       }
     };
     actualizar();
@@ -106,7 +120,6 @@ export default function Page() {
   return (
     <main className="flex min-h-screen flex-col bg-gray-950 px-6 py-12">
 
-      {/* Encabezado */}
       <div className="mb-12 text-center">
         <p className={`${lusitana.className} text-3xl font-bold text-white md:text-4xl`}>
           Operaciones con el Motor
@@ -117,10 +130,8 @@ export default function Page() {
         <div className="mx-auto mt-4 h-px w-24 bg-blue-500 opacity-60" />
       </div>
 
-      {/* Layout principal: tarjetas + aside */}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
 
-        {/* Tarjetas de funciones */}
         <section className="grid flex-1 grid-cols-1 gap-6 sm:grid-cols-2">
           {motorFunctions.map((fn) => {
             const estaCargando = cargando === fn.id;
@@ -164,17 +175,15 @@ export default function Page() {
           })}
         </section>
 
-        {/* Aside: estado en tiempo real */}
         <aside className="w-full lg:w-[420px] xl:w-[480px] lg:sticky lg:top-6">
           <div className="rounded-2xl border border-blue-800/30 bg-gray-900 p-6 shadow-xl shadow-blue-950/40">
 
-            {/* Cabecera del aside */}
             <div className="mb-6 border-b border-blue-800/30 pb-4">
               <p className={`${lusitana.className} text-lg font-bold text-white`}>
                 Estado del Sistema
               </p>
               <p className="mt-1 text-xs uppercase tracking-widest text-blue-400/70">
-                Tiempo real &middot; cada 1s
+                Tiempo real · cada 1s
               </p>
               {ultimaActualizacion && (
                 <p className="mt-1 text-xs text-blue-700">
@@ -183,14 +192,12 @@ export default function Page() {
               )}
             </div>
 
-            {/* Error de conexion */}
             {errorEstado && (
               <div className="mb-4 rounded-xl border border-red-800 bg-red-950/50 px-4 py-3 text-center text-xs text-red-400">
                 {errorEstado}
               </div>
             )}
 
-            {/* Skeleton */}
             {!estado && !errorEstado && (
               <div className="space-y-4">
                 <div className="h-28 animate-pulse rounded-2xl bg-blue-950/40" />
@@ -198,7 +205,6 @@ export default function Page() {
               </div>
             )}
 
-            {/* Tarjetas de estado */}
             {estado && (
               <div className="space-y-4">
 
@@ -216,36 +222,36 @@ export default function Page() {
                       {estado.motor.encendido ? 'ON' : 'OFF'}
                     </span>
                   </div>
-                  {estado.motor.encendido && estado.motor.direccion && (
+                  {/* Direccion usa 'forward' en vez de 'direccion' */}
+                  {estado.motor.encendido && estado.motor.forward && (
                     <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
                       <span className="text-base">
-                        {estado.motor.direccion === 'forward' ? '➡' : '⬅'}
+                        {estado.motor.forward === true ? '➡' : '⬅'}
                       </span>
                       <div>
                         <p className="text-xs uppercase tracking-widest text-blue-400/60">Direccion</p>
                         <p className="text-xs font-semibold text-white">
-                          {estado.motor.direccion === 'forward' ? 'Avance' : 'Retroceso'}
+                          {estado.motor.forward === true ? 'Avance' : 'Retroceso'}
                         </p>
                       </div>
-                      <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${ estado.motor.direccion === 'forward' ? 'bg-sky-500/20 text-sky-400' : 'bg-purple-500/20 text-purple-400' }`}>
-                        {estado.motor.direccion.toUpperCase()}
+                      <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${ estado.motor.forward === true ? 'bg-sky-500/20 text-sky-400' : 'bg-purple-500/20 text-purple-400' }`}>
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* Valvula */}
-                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${ estado.raceway.v2_llenado ? 'border-sky-500 bg-gradient-to-r from-sky-950/60 to-blue-950/60' : 'border-amber-500 bg-gradient-to-r from-amber-950/60 to-blue-950/60' } p-4`}>
+                {/* Valvula llenado raceway */}
+                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${ estado.raceway.valvula_llenado ? 'border-sky-500 bg-gradient-to-r from-sky-950/60 to-blue-950/60' : 'border-amber-500 bg-gradient-to-r from-amber-950/60 to-blue-950/60' } p-4`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${ estado.raceway.v2_llenado ? 'bg-sky-500/20 ring-1 ring-sky-500/40' : 'bg-amber-500/20 ring-1 ring-amber-500/40' }`}>
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${ estado.raceway.valvula_llenado ? 'bg-sky-500/20 ring-1 ring-sky-500/40' : 'bg-amber-500/20 ring-1 ring-amber-500/40' }`}>
                         &#9685;
                       </div>
-                      <p className={`${lusitana.className} font-bold text-white`}>Valvula</p>
+                      <p className={`${lusitana.className} font-bold text-white`}>Valvula Llenado</p>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${ estado.raceway.v2_llenado ? 'bg-sky-500/20 text-sky-400' : 'bg-amber-500/20 text-amber-400' }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${ estado.raceway.v2_llenado ? 'bg-sky-400 animate-pulse' : 'bg-amber-500' }`} />
-                      {estado.raceway.v2_llenado ? 'ABIERTA' : 'CERRADA'}
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${ estado.raceway.valvula_llenado ? 'bg-sky-500/20 text-sky-400' : 'bg-amber-500/20 text-amber-400' }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${ estado.raceway.valvula_llenado ? 'bg-sky-400 animate-pulse' : 'bg-amber-500' }`} />
+                      {estado.raceway.valvula_llenado ? 'ABIERTA' : 'CERRADA'}
                     </span>
                   </div>
                 </div>
