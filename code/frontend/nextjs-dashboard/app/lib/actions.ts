@@ -51,8 +51,8 @@ export async function fetchEstado(): Promise<Estado> {
   return res.json();
 }
 
-export async function fase(fase: number): Promise<void> {
-  const response = await fetch(`${BASE_URL}/${fase}`, { method: 'POST' });
+export async function fase(fase: string): Promise<void> {
+  const response = await fetch(`${BASE_URL}/fase${fase}`, { method: 'POST' });
   if (!response.ok) throw new Error(`Error al activar la fase ${fase}`);
 }
 

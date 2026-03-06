@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { lusitana } from '@/app/ui/fonts';
-import { fase, fetchEstado, type Estado } from '@/app/lib/actions';
+import { fase, type Estado } from '@/app/lib/actions';
 
-const INTERVALO_MS = 10000;
+//Use memo
+//dividir por componente al que se le pasen las constantes con sus propiedades --> descripcion, icono, titulo, funcion etc
+//separacion de codigo --> iu / backend
 
 type FuncionMotor = {
   id: number;
@@ -28,7 +30,7 @@ const motorFunctions: FuncionMotor[] = [
     color: 'from-blue-900 to-blue-700',
     hoverColor: 'hover:from-blue-800 hover:to-blue-600',
     btnColor: 'bg-emerald-500 hover:bg-emerald-400',
-    onClick: () => fase(1),
+    onClick: () => fase("1"),
   },
   {
     id: 2,
@@ -39,7 +41,7 @@ const motorFunctions: FuncionMotor[] = [
     color: 'from-blue-950 to-blue-800',
     hoverColor: 'hover:from-blue-900 hover:to-blue-700',
     btnColor: 'bg-red-500 hover:bg-red-400',
-    onClick: () => fase(2),
+    onClick: () => fase("2"),
   },
   {
     id: 3,
@@ -50,7 +52,7 @@ const motorFunctions: FuncionMotor[] = [
     color: 'from-blue-900 to-indigo-800',
     hoverColor: 'hover:from-blue-800 hover:to-indigo-700',
     btnColor: 'bg-sky-500 hover:bg-sky-400',
-    onClick: () => fase(3),
+    onClick: () => fase("3"),
   },
   {
     id: 4,
@@ -61,7 +63,7 @@ const motorFunctions: FuncionMotor[] = [
     color: 'from-slate-800 to-blue-900',
     hoverColor: 'hover:from-slate-700 hover:to-blue-800',
     btnColor: 'bg-amber-500 hover:bg-amber-400',
-    onClick: () => fase(4),
+    onClick: () => fase("4"),
   },
   {
     id: 5,
@@ -72,7 +74,7 @@ const motorFunctions: FuncionMotor[] = [
     color: 'from-blue-800 to-cyan-900',
     hoverColor: 'hover:from-blue-700 hover:to-cyan-800',
     btnColor: 'bg-blue-400 hover:bg-blue-300',
-    onClick: () => fase(5),
+    onClick: () => fase("5"),
   },
 ];
 
@@ -86,22 +88,47 @@ export default function Page() {
   const [errorEstado, setErrorEstado] = useState<string | null>(null);
   const [ultimaActualizacion, setUltimaActualizacion] = useState<string>('');
 
+  //Uso de los datos del webSocket
   useEffect(() => {
-    const actualizar = async () => {
-      try {
-        const datos = await fetchEstado();
-        setEstado(datos);
-        setErrorEstado(null);
-        setUltimaActualizacion(new Date().toLocaleTimeString());
-      } catch (e: any) {
-        setErrorEstado(e.message ?? 'Sin conexion con la API');
-      }
-    };
-    actualizar();
-    const intervalo = setInterval(actualizar, INTERVALO_MS);
-    return () => clearInterval(intervalo);
-  }, []);
+    let ws: WebSocket;
+    let intentos = 0;
+    let cancelado = false; // ← flag de control
 
+    const conectar = () => {
+      if (cancelado) return; // ← no reconectar si ya desmontó
+
+      ws = new WebSocket('ws://localhost:8000/ws');
+
+      ws.onopen = () => {
+        setErrorEstado(null);
+        intentos = 0;
+      };
+
+      ws.onmessage = (event) => {
+        const datos = JSON.parse(event.data);
+        setEstado(datos);
+        setUltimaActualizacion(new Date().toLocaleTimeString());
+      };
+
+      ws.onerror = () => setErrorEstado('Sin conexion con la API');
+
+      ws.onclose = () => {
+        if (cancelado) return; // ← no reintentar si desmontó
+        intentos++;
+        const espera = Math.min(1000 * intentos, 10000);
+        setErrorEstado(`Conexion cerrada. Reconectando en ${espera / 1000}s...`);
+        setTimeout(conectar, espera);
+      };
+    };
+
+    conectar();
+
+    return () => {
+      cancelado = true;
+      ws?.close(); // ← optional chaining por si nunca se asignó
+    };
+  }, []);
+  
   const ejecutar = async (fn: FuncionMotor) => {
     setCargando(fn.id);
     setErrorId(null);
@@ -209,16 +236,16 @@ export default function Page() {
               <div className="space-y-4">
 
                 {/* Motor */}
-                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${ estado.motor.encendido ? 'border-emerald-500 bg-gradient-to-r from-emerald-950/60 to-blue-950/60' : 'border-red-600 bg-gradient-to-r from-red-950/60 to-blue-950/60' } p-4`}>
+                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${estado.motor.encendido ? 'border-emerald-500 bg-gradient-to-r from-emerald-950/60 to-blue-950/60' : 'border-red-600 bg-gradient-to-r from-red-950/60 to-blue-950/60'} p-4`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${ estado.motor.encendido ? 'bg-emerald-500/20 ring-1 ring-emerald-500/40' : 'bg-red-500/20 ring-1 ring-red-500/40' }`}>
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${estado.motor.encendido ? 'bg-emerald-500/20 ring-1 ring-emerald-500/40' : 'bg-red-500/20 ring-1 ring-red-500/40'}`}>
                         &#9881;
                       </div>
                       <p className={`${lusitana.className} font-bold text-white`}>Motor</p>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${ estado.motor.encendido ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400' }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${ estado.motor.encendido ? 'bg-emerald-400 animate-pulse' : 'bg-red-500' }`} />
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${estado.motor.encendido ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${estado.motor.encendido ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'}`} />
                       {estado.motor.encendido ? 'ON' : 'OFF'}
                     </span>
                   </div>
@@ -234,23 +261,23 @@ export default function Page() {
                           {estado.motor.forward === true ? 'Avance' : 'Retroceso'}
                         </p>
                       </div>
-                      <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${ estado.motor.forward === true ? 'bg-sky-500/20 text-sky-400' : 'bg-purple-500/20 text-purple-400' }`}>
+                      <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${estado.motor.forward === true ? 'bg-sky-500/20 text-sky-400' : 'bg-purple-500/20 text-purple-400'}`}>
                       </span>
                     </div>
                   )}
                 </div>
 
                 {/* Valvula llenado raceway */}
-                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${ estado.raceway.valvula_llenado ? 'border-sky-500 bg-gradient-to-r from-sky-950/60 to-blue-950/60' : 'border-amber-500 bg-gradient-to-r from-amber-950/60 to-blue-950/60' } p-4`}>
+                <div className={`relative overflow-hidden rounded-2xl border-l-4 ${estado.raceway.valvula_llenado ? 'border-sky-500 bg-gradient-to-r from-sky-950/60 to-blue-950/60' : 'border-amber-500 bg-gradient-to-r from-amber-950/60 to-blue-950/60'} p-4`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${ estado.raceway.valvula_llenado ? 'bg-sky-500/20 ring-1 ring-sky-500/40' : 'bg-amber-500/20 ring-1 ring-amber-500/40' }`}>
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-2xl ${estado.raceway.valvula_llenado ? 'bg-sky-500/20 ring-1 ring-sky-500/40' : 'bg-amber-500/20 ring-1 ring-amber-500/40'}`}>
                         &#9685;
                       </div>
                       <p className={`${lusitana.className} font-bold text-white`}>Valvula Llenado</p>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${ estado.raceway.valvula_llenado ? 'bg-sky-500/20 text-sky-400' : 'bg-amber-500/20 text-amber-400' }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${ estado.raceway.valvula_llenado ? 'bg-sky-400 animate-pulse' : 'bg-amber-500' }`} />
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${estado.raceway.valvula_llenado ? 'bg-sky-500/20 text-sky-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${estado.raceway.valvula_llenado ? 'bg-sky-400 animate-pulse' : 'bg-amber-500'}`} />
                       {estado.raceway.valvula_llenado ? 'ABIERTA' : 'CERRADA'}
                     </span>
                   </div>

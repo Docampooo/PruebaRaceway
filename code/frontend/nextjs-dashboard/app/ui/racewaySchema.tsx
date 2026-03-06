@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchEstado, toggleValvula, type Estado } from '@/app/lib/actions';
-
-const INTERVALO_MS = 5000;
+import { toggleValvula, type Estado } from '@/app/lib/actions';
 
 function Valvula({
   x, y, abierta, label, onClick, bloqueada = false
@@ -76,19 +74,20 @@ export default function RacewaySchema() {
   const [mensajeBloqueo, setMensajeBloqueo] = useState<string | null>(null);
 
   useEffect(() => {
-    const actualizar = async () => {
-      try {
-        const datos = await fetchEstado();
-        setEstado(datos);
-        setError(null);
-        setUltimaAct(new Date().toLocaleTimeString());
-      } catch {
-        setError('Sin conexion con la API');
-      }
+    const ws = new WebSocket('ws://localhost:8000/ws');
+
+    ws.onopen = () => setError(null);
+
+    ws.onmessage = (event) => {
+      const datos = JSON.parse(event.data);
+      setEstado(datos);
+      setUltimaAct(new Date().toLocaleTimeString());
     };
-    actualizar();
-    const intervalo = setInterval(actualizar, INTERVALO_MS);
-    return () => clearInterval(intervalo);
+
+    ws.onerror = () => setError('Sin conexion con la API');
+    ws.onclose = () => setError('Conexion cerrada');
+
+    return () => ws.close();
   }, []);
 
   const handleValvula = async (valvula: string, estadoActual: boolean) => {
