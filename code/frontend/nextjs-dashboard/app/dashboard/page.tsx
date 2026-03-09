@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { lusitana } from '@/app/ui/fonts';
 import { FuncionMotor } from '@/app/tipos/raceway';
-import { motorFunctions } from '@/app/data/raceway';
+import { motorFunctions, funciones } from '@/app/data/raceway';
 import { useWebSocket } from '@/app/hooks/useWebSocket';
 import { toggleValvula } from '@/app/lib/actions';
 import FuncionCard from '@/app/ui/dashboard/racewayCircuito/FuncionCard';
+import FuncionInfoCard from '@/app/ui/dashboard/racewayCircuito/FuncionInfoCard';
 import EstadoSistema from '@/app/ui/dashboard/racewayCircuito/EstadoSistema';
 import RacewaySVG from '@/app/ui/dashboard/racewayCircuito/RacewaySVG';
 
@@ -46,8 +47,6 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-gray-950 px-4 py-8">
-
-      {/* Contenedor centrado para todo */}
       <div className="mx-auto max-w-5xl">
 
         {/* ── Encabezado ── */}
@@ -83,7 +82,7 @@ export default function Page() {
           <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-400" /> Sensor activo</span>
         </div>
 
-        {/* ── SVG + Estado juntos ── */}
+        {/* ── SVG + Estado ── */}
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
             <RacewaySVG estado={estado} onValvula={handleValvula} />
@@ -116,20 +115,8 @@ export default function Page() {
           </div>
         )}
 
-        <div className="my-8 h-px w-full bg-gradient-to-r from-transparent via-blue-800 to-transparent opacity-40" />
-
-        {/* ── Tarjetas funciones motor ── */}
-        <div className="mb-4 text-center">
-          <p className={`${lusitana.className} text-xl font-bold text-white`}>
-            Operaciones con el Motor
-          </p>
-          <p className="mt-1 text-xs uppercase tracking-widest text-blue-400/70">
-            Panel de control del raceway
-          </p>
-          <div className="mx-auto mt-2 h-px w-16 bg-blue-500 opacity-60" />
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {/* ── Tarjetas acción motor (sin encabezado) ── */}
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {motorFunctions.map((fn) => (
             <FuncionCard
               key={fn.id}
@@ -140,6 +127,25 @@ export default function Page() {
               onClick={() => ejecutar(fn)}
               disabled={cargando !== null}
             />
+          ))}
+        </div>
+
+        <div className="my-8 h-px w-full bg-gradient-to-r from-transparent via-blue-800 to-transparent opacity-40" />
+
+        {/* ── Tarjetas info fases ── */}
+        <div className="mb-6 text-center">
+          <p className={`${lusitana.className} text-xl font-bold text-white`}>
+            Descripcion de las Fases
+          </p>
+          <p className="mt-1 text-xs uppercase tracking-widest text-blue-400/70">
+            Utilidades y aplicaciones practicas
+          </p>
+          <div className="mx-auto mt-2 h-px w-16 bg-blue-500 opacity-60" />
+        </div>
+
+        <div className="space-y-4">
+          {funciones.map((fn, i) => (
+            <FuncionInfoCard key={fn.id} fn={fn} index={i} />
           ))}
         </div>
 
