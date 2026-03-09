@@ -1,0 +1,1 @@
+//Las cards largas de overview con aplicaciones overview/page.tsx

@@ -28,3 +28,39 @@ export type Estado = {
   salida: Deposito
 
 };
+
+//Funciones de control de motor, valvulas y sensores
+export type FuncionMotor = {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  icono: string;
+  accion: string;
+  color: string;
+  hoverColor: string;
+  btnColor: string;
+  onClick: () => Promise<void>;
+};
+
+//esquema raceway
+export type FuncionOverview = {
+  id: number;
+  titulo: string;
+  utilidad: string;
+  aplicaciones: string[];
+  icono: string;
+  gradiente: string;
+  acento: string;
+  tag: string;
+};
+
+export type StatItem = {
+  valor: string;
+  label: string;
+};
+
+export type NivelItem = {
+  label: string;
+  nivel: number;
+  color: string;
+};

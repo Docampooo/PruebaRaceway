@@ -1,70 +1,8 @@
-import { Box } from '@mui/material';
-
-
-
 'use client';
 
+import { Box } from '@mui/material';
+import { funciones, stats } from '@/app/data/raceway';
 import { lusitana } from '@/app/ui/fonts';
-
-const funciones = [
-  {
-    id: 1,
-    titulo: 'Iniciar Motor',
-    utilidad: 'Pone en marcha el sistema de bombeo principal, iniciando la circulacion activa del agua a traves del canal del raceway.',
-    aplicaciones: ['Inicio de jornada de cultivo', 'Reinicio tras mantenimiento', 'Activacion del ciclo de oxigenacion'],
-    icono: '▶',
-    gradiente: 'from-blue-900 via-blue-800 to-cyan-900',
-    acento: 'border-cyan-500',
-    tag: 'bg-cyan-900 text-cyan-300',
-  },
-  {
-    id: 2,
-    titulo: 'Motor parado, Valvula abierta',
-    utilidad: 'Permite el flujo pasivo del agua sin accion mecanica del motor, util para drenajes controlados o equilibrado de presiones.',
-    aplicaciones: ['Drenaje parcial del canal', 'Equilibrado de niveles', 'Limpieza sin agitacion'],
-    icono: '■',
-    gradiente: 'from-blue-950 via-indigo-900 to-blue-900',
-    acento: 'border-blue-400',
-    tag: 'bg-blue-900 text-blue-300',
-  },
-  {
-    id: 3,
-    titulo: 'Motor encendido, Valvula abierta',
-    utilidad: 'Estado optimo de operacion: flujo maximo con motor activo y valvulas abiertas. Maxima oxigenacion y circulacion del agua.',
-    aplicaciones: ['Operacion normal de cultivo', 'Maxima oxigenacion de algas', 'Ciclos de alta produccion'],
-    icono: '◈',
-    gradiente: 'from-sky-900 via-blue-800 to-indigo-900',
-    acento: 'border-sky-400',
-    tag: 'bg-sky-900 text-sky-300',
-  },
-  {
-    id: 4,
-    titulo: 'Cerrar todo',
-    utilidad: 'Cierre completo del sistema hidraulico. Aisla el circuito para prevenir perdidas y proteger los componentes mecanicos.',
-    aplicaciones: ['Parada de emergencia', 'Mantenimiento programado', 'Inspeccion del sistema'],
-    icono: '◉',
-    gradiente: 'from-slate-900 via-blue-950 to-slate-900',
-    acento: 'border-amber-500',
-    tag: 'bg-amber-900 text-amber-300',
-  },
-  {
-    id: 5,
-    titulo: 'Direccion Opuesta',
-    utilidad: 'Invierte el sentido del flujo en el canal. Util para limpiezas profundas y uniformidad del cultivo a lo largo del raceway.',
-    aplicaciones: ['Limpieza profunda del canal', 'Distribucion uniforme de nutrientes', 'Prevencion de sedimentos'],
-    icono: '◎',
-    gradiente: 'from-blue-900 via-cyan-900 to-teal-900',
-    acento: 'border-teal-400',
-    tag: 'bg-teal-900 text-teal-300',
-  },
-];
-
-const stats = [
-  { valor: '5', label: 'Modos de operacion' },
-  { valor: '24/7', label: 'Monitoreo continuo' },
-  { valor: '100%', label: 'Control remoto' },
-  { valor: 'IoT', label: 'Conectividad en tiempo real' },
-];
 
 export default function Page() {
   return (

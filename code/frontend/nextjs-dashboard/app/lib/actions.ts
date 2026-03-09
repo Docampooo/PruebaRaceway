@@ -1,7 +1,8 @@
 //Funcinoes de confirmacion de la API en python
 
+import { Estado } from '@/app/tipos/raceway';
+
 const BASE_URL = 'http://localhost:8000';
-import {Estado } from "../tipos/raceway";
 // const BASE_URL = 'http://localhost:3333'
 
 export async function fetchEstado(): Promise<Estado> {

@@ -1,0 +1,1 @@
+//Solo el bloque del motor dentro del aside en EstadoSistema.tsx
