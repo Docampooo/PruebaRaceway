@@ -1,1 +1,0 @@
-//Solo el bloque de válvula dentro del asideEstadoSistema.tsx

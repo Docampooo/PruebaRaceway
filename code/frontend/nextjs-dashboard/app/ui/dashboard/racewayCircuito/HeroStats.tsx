@@ -1,1 +1,0 @@
-//Los 4 stats del hero de overviewoverview/page.tsx

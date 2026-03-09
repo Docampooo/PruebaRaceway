@@ -10,6 +10,7 @@ import FuncionCard from '@/app/ui/dashboard/racewayCircuito/FuncionCard';
 import FuncionInfoCard from '@/app/ui/dashboard/racewayCircuito/FuncionInfoCard';
 import EstadoSistema from '@/app/ui/dashboard/racewayCircuito/EstadoSistema';
 import RacewaySVG from '@/app/ui/dashboard/racewayCircuito/RacewaySVG';
+import PageSkeleton from '@/app/ui/dashboard/racewayCircuito/pageskeleton';
 
 export default function Page() {
 
@@ -44,6 +45,9 @@ export default function Page() {
       setTimeout(() => setMensajeBloqueo(null), 3000);
     }
   };
+
+  // Mostrar skeleton hasta que llegue el primer dato
+  if (!estado && !errorEstado) return <PageSkeleton />;
 
   return (
     <main className="min-h-screen bg-gray-950 px-4 py-8">
@@ -115,7 +119,7 @@ export default function Page() {
           </div>
         )}
 
-        {/* ── Tarjetas acción motor (sin encabezado) ── */}
+        {/* ── Tarjetas acción motor ── */}
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {motorFunctions.map((fn) => (
             <FuncionCard

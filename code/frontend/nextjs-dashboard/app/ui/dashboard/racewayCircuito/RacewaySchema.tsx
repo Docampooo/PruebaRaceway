@@ -1,1 +1,0 @@
-//Solo el componente principal, importando los tres de arriba
