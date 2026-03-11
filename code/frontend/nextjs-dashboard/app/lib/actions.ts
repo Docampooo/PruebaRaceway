@@ -13,9 +13,10 @@ export async function fetchEstado(): Promise<Estado> {
   return res.json();
 }
 
-export async function fase(fase: string): Promise<void> {
-  const response = await fetch(`${BASE_URL}/fase${fase}`, { method: 'POST' });
-  if (!response.ok) throw new Error(`Error al activar la fase ${fase}`);
+export async function fase(estado: boolean, direccion: boolean): Promise<void> {
+
+  const response = await fetch(`${BASE_URL}/${estado}?direccion=${direccion}`, { method: 'POST' });
+  if (!response.ok) throw new Error(`No se pudo hacer la tarea`);
 }
 
 export async function toggleValvula(valvula: string, abrir: boolean): Promise<void> {
