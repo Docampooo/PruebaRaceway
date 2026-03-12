@@ -1,5 +1,5 @@
 import { fase } from '@/app/lib/actions';
-import { FuncionMotor } from '@/app/tipos/raceway';
+import { FuncionMotor, FuncionOverview } from '@/app/tipos/raceway';
 
 // ─── Overview ────────────────────────────────────────────────────────────────
 
@@ -10,7 +10,7 @@ export const stats = [
   { valor: 'IoT', label: 'Conectividad en tiempo real' },
 ];
 
-export const funciones = [
+export const funciones: FuncionOverview[] = [
   {
     id: 1,
     titulo: 'Iniciar Motor',
@@ -43,9 +43,32 @@ export const funciones = [
   },
 ];
 
-// ─── FuncionesMotor ───────────────────────────────────────────────────────────
-// Degradado azul: carta 1 más oscura → carta 5 más clara
-// Diferencia sutil — mismo tono, distinto nivel de profundidad
+// ─── Funciones Toma de Muestras (info cards) ──────────────────────────────────
+
+export const muestraFunciones: FuncionOverview[] = [
+  {
+    id: 1,
+    titulo: 'Recoger Muestra',
+    utilidad: 'Extrae una muestra puntual del cultivo de microalgas directamente desde el raceway. Permite analizar el estado del cultivo en un momento determinado.',
+    aplicaciones: ['Control de densidad celular', 'Analisis de calidad del cultivo', 'Seguimiento del crecimiento de microalgas'],
+    icono: '🧪',
+    gradiente: 'from-green-50 to-emerald-50',
+    acento: 'border-green-600',
+    tag: 'bg-green-100 text-green-700',
+  },
+  {
+    id: 2,
+    titulo: 'Recogida Automatica',
+    utilidad: 'Programa tomas de muestra automaticas a intervalos regulares de tiempo. El sistema ejecuta la recogida de forma autonoma sin necesidad de intervencion manual.',
+    aplicaciones: ['Monitoreo continuo del cultivo', 'Registro periodico de datos', 'Deteccion temprana de anomalias en el crecimiento'],
+    icono: '⏱',
+    gradiente: 'from-emerald-50 to-teal-50',
+    acento: 'border-emerald-500',
+    tag: 'bg-emerald-100 text-emerald-700',
+  },
+];
+
+// ─── Funciones Motor ──────────────────────────────────────────────────────────
 
 export const motorFunctions: FuncionMotor[] = [
   {
@@ -83,7 +106,34 @@ export const motorFunctions: FuncionMotor[] = [
   },
 ];
 
-// ─── Raceway Schema ───────────────────────────────────────────────────────────
+// ─── Funciones Muestras ───────────────────────────────────────────────────────
+
+export const muestraFunctions: FuncionMotor[] = [
+  {
+    id: 4,
+    nombre: 'Tomar Muestra',
+    descripcion: 'Extrae una muestra puntual del cultivo en el raceway.',
+    icono: '🧪',
+    accion: 'Tomar',
+    color: 'from-green-700 to-green-600',
+    hoverColor: '',
+    btnColor: 'bg-green-500 hover:bg-green-400',
+    onClick: async () => { /* pendiente */ },
+  },
+  {
+    id: 5,
+    nombre: 'Muestra por Tiempo',
+    descripcion: 'Programa tomas de muestra automaticas a intervalos regulares.',
+    icono: '⏱',
+    accion: 'Programar',
+    color: 'from-green-500 to-green-400',
+    hoverColor: '',
+    btnColor: 'bg-green-400 hover:bg-green-300',
+    onClick: async () => { /* pendiente */ },
+  },
+];
+
+// ─── Niveles y leyenda ────────────────────────────────────────────────────────
 
 export const nivelesConfig = [
   { label: 'Salida',          color: 'bg-sky-500' },
@@ -92,8 +142,8 @@ export const nivelesConfig = [
 ];
 
 export const leyendaValvulas = [
-  { color: 'bg-algae-500',  texto: 'Valvula abierta' },
-  { color: 'bg-red-400',    texto: 'Valvula cerrada' },
-  { color: 'bg-gray-300',   texto: 'Valvula bloqueada' },
-  { color: 'bg-algae-400',  texto: 'Sensor activo' },
+  { color: 'bg-algae-500', texto: 'Valvula abierta' },
+  { color: 'bg-red-400',   texto: 'Valvula cerrada' },
+  { color: 'bg-gray-300',  texto: 'Valvula bloqueada' },
+  { color: 'bg-algae-400', texto: 'Sensor activo' },
 ];

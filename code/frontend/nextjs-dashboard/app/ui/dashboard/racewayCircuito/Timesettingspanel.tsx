@@ -40,7 +40,7 @@ export default function TimeSettingsPanel() {
     valvula: 'valvula_llenado' | 'valvula_vaciado',
     valor: number
   ) => {
-    const clamped = Math.min(120, Math.max(0, valor));  // mínimo 0, máximo 120
+    const clamped = Math.min(120, Math.max(0, valor));
     setSettings(prev => ({
       ...prev,
       [deposito]: { ...prev[deposito], [valvula]: clamped },
@@ -71,7 +71,7 @@ export default function TimeSettingsPanel() {
           Tiempos de Válvulas
         </p>
         <p className='mt-0.5 text-xs uppercase tracking-widest text-gray-400'>
-          Intervalo entre 0 s y 120 s
+          Intervalo entre 0 y 120s
         </p>
       </div>
 
@@ -88,14 +88,10 @@ export default function TimeSettingsPanel() {
       {!cargando && (
         <div className='space-y-2'>
           {VALVULAS.map(({ key, valvula, label }) => (
-            <div key={label} className='flex items-center gap-3'>
+            <div key={label} className='flex items-center justify-center gap-3'>
 
-              <span className='w-7 shrink-0 text-center text-xs font-bold text-blue-700 font-mono'>
+              <span className='w-7 text-center text-xs font-bold text-blue-700 font-mono'>
                 {label}
-              </span>
-
-              <span className='min-w-0 flex-1 truncate text-xs text-gray-500'>
-                {valvula === 'valvula_llenado' ? 'Llenado' : 'Vaciado'}
               </span>
 
               <div className='flex items-center gap-1'>

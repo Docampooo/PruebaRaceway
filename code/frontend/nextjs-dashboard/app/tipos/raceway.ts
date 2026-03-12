@@ -1,7 +1,4 @@
-export type MetricFileName =
-  | 'detailed_df_t.json'
-  | 'detailed_df_t1_ext.json'
-  | 'detailed_df_t1.json';
+// ─── Depósitos ────────────────────────────────────────────────────────────────
 
 export type Deposito = {
   nivel: number;
@@ -12,21 +9,30 @@ export type Deposito = {
 };
 
 export type Estado = {
-
   motor: {
     encendido: boolean;
     forward: boolean;
   };
-
-  dep_raceway: Deposito   // Depósito conectado al canal oval
-
-  dep_cultivo: Deposito   // Depósito de cultivo (trapezoidal)
-
-  dep_cosecha: Deposito   // Depósito de cosecha
-
+  dep_raceway: Deposito;
+  dep_cultivo:  Deposito;
+  dep_cosecha:  Deposito;
 };
 
-//Funciones de control de motor, valvulas y sensores
+// ─── Time Settings ────────────────────────────────────────────────────────────
+
+export type DepositoTiempos = {
+  valvula_llenado: number;
+  valvula_vaciado: number;
+};
+
+export type TimeSettings = {
+  dep_raceway: DepositoTiempos;
+  dep_cultivo:  DepositoTiempos;
+  dep_cosecha:  DepositoTiempos;
+};
+
+// ─── Tarjetas de control ──────────────────────────────────────────────────────
+
 export type FuncionMotor = {
   id: number;
   nombre: string;
@@ -39,7 +45,6 @@ export type FuncionMotor = {
   onClick: () => Promise<void>;
 };
 
-//esquema raceway
 export type FuncionOverview = {
   id: number;
   titulo: string;
@@ -62,13 +67,7 @@ export type NivelItem = {
   color: string;
 };
 
-export type DepositoTiempos = {
-  valvula_llenado: number; // 30–120 segundos
-  valvula_vaciado: number; // 30–120 segundos
-};
- 
-export type TimeSettings = {
-  dep_raceway: DepositoTiempos;
-  dep_cultivo:  DepositoTiempos;
-  dep_cosecha:  DepositoTiempos;
-};
+export type MetricFileName =
+  | 'detailed_df_t.json'
+  | 'detailed_df_t1_ext.json'
+  | 'detailed_df_t1.json';
